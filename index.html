@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Flower Pot Fireworks</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+}
+body{
+    background:black;
+    overflow:hidden;
+}
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+}
+
+/* Center Card */
+.card{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:rgba(0,0,0,0.6);
+    padding:30px;
+    border-radius:20px;
+    color:white;
+    text-align:center;
+    box-shadow:0 0 40px rgba(255,255,255,0.3);
+    backdrop-filter:blur(6px);
+}
+input{
+    margin-top:15px;
+    padding:10px;
+    border-radius:20px;
+    border:none;
+    outline:none;
+    text-align:center;
+}
+button,a{
+    margin-top:15px;
+    padding:10px 25px;
+    border-radius:25px;
+    border:none;
+    background:#ff0055;
+    color:white;
+    cursor:pointer;
+    text-decoration:none;
+    display:inline-block;
+}
+#back{display:none;}
+#msg{
+    min-height:90px;
+    margin-top:10px;
+    color:#ffccff;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div class="card" id="front">
+    <h2>🌸 get an memory by Entering ur name 🌸</h2>
+    <p>Enter your name</p>
+    <input id="name" placeholder="Your Name">
+    <br>
+    <button onclick="startShow()"> Tap here </button>
+</div>
+
+<div class="card" id="back">
+    <h2 id="title"></h2>
+    <div id="msg"></div>
+    <a href="h.html">📸 View Memories</a>
+</div>
+
+<script>
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+onresize=()=>{
+    canvas.width=innerWidth;
+    canvas.height=innerHeight;
+}
+
+/* Flower Pot Particles */
+class Spark{
+    constructor(x){
+        this.x=x;
+        this.y=canvas.height;
+        this.vx=(Math.random()-0.5)*2;
+        this.vy=-Math.random()*8-5;
+        this.life=100;
+        this.color=`hsl(${Math.random()*360},100%,60%)`;
+    }
+    update(){
+        this.x+=this.vx;
+        this.y+=this.vy;
+        this.vy+=0.05; // gravity
+        this.life--;
+    }
+    draw(){
+        ctx.globalAlpha=this.life/100;
+        ctx.fillStyle=this.color;
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,2,0,Math.PI*2);
+        ctx.fill();
+        ctx.globalAlpha=1;
+    }
+}
+
+let sparks=[];
+
+function flowerPot(){
+    let x=canvas.width/2;
+    for(let i=0;i<10;i++){
+        sparks.push(new Spark(x));
+    }
+}
+
+function animate(){
+    ctx.fillStyle="rgba(0,0,0,0.2)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    if(Math.random()<0.7){
+        flowerPot();
+    }
+
+    sparks.forEach(s=>s.update());
+    sparks.forEach(s=>s.draw());
+    sparks=sparks.filter(s=>s.life>0);
+
+    requestAnimationFrame(animate);
+}
+animate();
+
+/* Card Logic */
+let text="Like this flower pot, may your life sparkle nonstop with happiness, colors, and success 🌸🎂✨";
+let i=0;
+
+function startShow(){
+    let n=document.getElementById("name").value || "Friend";
+    document.getElementById("front").style.display="none";
+    document.getElementById("back").style.display="block";
+    document.getElementById("title").innerHTML="🎉 Happy Birthday "+n+" 🎂";
+    typeText();
+}
+
+function typeText(){
+    if(i<text.length){
+        document.getElementById("msg").innerHTML+=text.charAt(i);
+        i++;
+        setTimeout(typeText,50);
+    }
+}
+</script>
+
+</body>
+</html>
